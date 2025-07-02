@@ -21,4 +21,58 @@ This workflow shows how AI can help quickly diagnose and resolve cloud deploymen
 
 ---
 
+## 🐍 Python Setup
+
+### Quick Start
+
+1. **Clone and navigate to the repository:**
+   ```bash
+   git clone <repository-url>
+   cd hero-of-the-day-hack
+   ```
+
+2. **Set up Python environment:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your Azure and OpenAI credentials
+   ```
+
+4. **Run the application:**
+   ```bash
+   python main.py --help
+   python main.py setup  # Set up development environment
+   python main.py        # Run the main application
+   ```
+
+### Project Structure
+
+```
+📁 hero-of-the-day-hack/
+├── 📄 main.py              # Main entry point
+├── 📄 requirements.txt     # Python dependencies
+├── 📄 .env.example        # Environment variables template
+├── 📁 src/                # Source code modules
+│   ├── 📄 __init__.py
+│   ├── 📄 azure_manager.py  # Azure resource management
+│   ├── 📄 ai_agent.py      # AI troubleshooting agent
+│   └── 📄 config.py        # Configuration management
+└── 📄 README.md           # This file
+```
+
+### Key Features
+
+- 🔧 **Azure Integration**: Manage and analyze Azure resources
+- 🤖 **AI-Powered Analysis**: Use Semantic Kernel for intelligent troubleshooting
+- ⚡ **Quick Setup**: Minimal configuration for rapid hackathon development
+- 🎯 **Modular Design**: Easy to extend and customize
+
+---
+
 Happy hacking! 🎉

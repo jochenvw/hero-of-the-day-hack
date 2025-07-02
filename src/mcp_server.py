@@ -12,6 +12,7 @@ from mcp.server import FastMCP
 from .azure_manager import AzureManager
 from .ai_agent import NetworkTroubleshootingAgent
 from .config import get_config
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -156,22 +157,12 @@ def get_network_issues(resource_group: str) -> Dict[str, Any]:
 
 def run_mcp_server():
     """
-    Run the MCP server using stdio transport.
+    Run the MCP server using streamable-http transport (FastMCP built-in HTTP server).
     This is the main entry point for the MCP server.
     """
-    logger.info("Starting Hero of the Day MCP server...")
-    
-    async def main():
-        # Run the server using stdio transport for GitHub Copilot integration
-        await mcp_server.run_stdio_async()
-    
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("MCP server stopped by user")
-    except Exception as e:
-        logger.error(f"MCP server error: {e}")
-        raise
+    logger.info("Starting Hero of the Day MCP server (streamable-http mode)...")
+    # Use a custom HTTP client with SSL verification disabled
+    mcp_server.run(transport="streamable-http")
 
 if __name__ == "__main__":
     # Configure logging

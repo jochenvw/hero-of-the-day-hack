@@ -9,9 +9,9 @@ import asyncio
 from typing import Dict, Any, List
 import logging
 from mcp.server import FastMCP
-from .azure_manager import AzureManager
-from .ai_agent import NetworkTroubleshootingAgent
-from .config import get_config
+from azure_manager import AzureManager
+from ai_agent import NetworkTroubleshootingAgent
+from config import get_config
 import httpx
 
 logger = logging.getLogger(__name__)

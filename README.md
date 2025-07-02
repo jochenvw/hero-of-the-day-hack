@@ -66,8 +66,10 @@ The MCP server provides the following tools to GitHub Copilot:
 - **hello_world**: Test MCP connectivity with a simple greeting
 - **get_azure_resource_groups**: List Azure resource groups in your subscription
 - **analyze_deployment_error**: Analyze specific deployment errors in Azure
-- **get_ai_troubleshooting_advice**: Get AI-powered troubleshooting recommendations
+- **get_ai_troubleshooting_advice**: Get AI-powered troubleshooting recommendations via Semantic Kernel
 - **get_network_issues**: Analyze network resources for potential issues
+- **analyze_azure_resources_with_ai**: AI-powered Azure resource analysis with comprehensive insights
+- **list_azure_resources_in_group**: List all resources in a specific resource group
 
 ### GitHub Copilot Integration
 
@@ -99,19 +101,36 @@ To use this MCP server with GitHub Copilot, you'll need to configure it in your 
 ├── 📁 src/                # Source code modules
 │   ├── 📄 __init__.py
 │   ├── 📄 azure_manager.py  # Azure resource management
-│   ├── 📄 ai_agent.py      # AI troubleshooting agent
+│   ├── 📄 ai_agent.py      # AI troubleshooting agent with Semantic Kernel
 │   ├── 📄 mcp_server.py    # MCP server for GitHub Copilot
 │   └── 📄 config.py        # Configuration management
+├── 📁 prompts/            # External system prompts (markdown files)
+│   ├── 📄 network_troubleshooting_system.md
+│   ├── 📄 azure_resource_analysis.md
+│   └── 📄 deployment_error_analysis_template.md
 └── 📄 README.md           # This file
 ```
 
+### SSL Configuration
+
+**Important**: SSL verification is disabled in this implementation to support traffic intercept scenarios. This is configured at multiple levels:
+
+- Global SSL context in the AI agent
+- HTTP client configuration in the MCP server
+- Environment settings for Azure SDK clients
+
+This allows the system to work properly in environments where SSL traffic is intercepted and re-signed.
+
 ### Key Features
 
-- 🔧 **Azure Integration**: Manage and analyze Azure resources
-- 🤖 **AI-Powered Analysis**: Use Semantic Kernel for intelligent troubleshooting
+- 🔧 **Azure Integration**: Manage and analyze Azure resources using Azure Management Python SDK
+- 🤖 **AI-Powered Analysis**: Use Semantic Kernel for intelligent troubleshooting with external prompt templates
 - 🌐 **MCP Server**: Model Context Protocol server for GitHub Copilot integration
+- 📝 **External Prompts**: System prompts stored in external markdown files for easy customization
+- 🔒 **SSL Bypass**: SSL verification disabled for traffic intercept compatibility
 - ⚡ **Quick Setup**: Minimal configuration for rapid hackathon development
 - 🎯 **Modular Design**: Easy to extend and customize
+- 🛡️ **Error Handling**: Comprehensive fallback mechanisms when services are unavailable
 
 ---
 

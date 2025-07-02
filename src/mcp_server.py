@@ -8,28 +8,39 @@ to provide Azure network troubleshooting capabilities to GitHub Copilot.
 import asyncio
 from typing import Dict, Any, List
 import logging
+import ssl
+import httpx
 from mcp.server import FastMCP
 from .azure_manager import AzureManager
 from .ai_agent import NetworkTroubleshootingAgent
 from .config import get_config
-import httpx
 
 logger = logging.getLogger(__name__)
 
-# Initialize the MCP server
+# Configure SSL context to disable verification for traffic intercept scenarios
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+# Initialize the MCP server with SSL verification disabled
 mcp_server = FastMCP(
     name="hero-of-the-day-mcp-server",
     instructions="""
     This is the Hero of the Day MCP server for Azure network troubleshooting.
     
     Available capabilities:
-    - Get Azure resource groups
-    - Analyze network deployment errors
-    - Provide AI-powered troubleshooting recommendations
+    - Get Azure resource groups using Azure Management SDK
+    - Analyze network deployment errors with AI-powered insights
+    - Provide intelligent troubleshooting recommendations via Semantic Kernel
+    - Analyze Azure resources and configurations
     
     Use the available tools to investigate Azure network issues and get 
     intelligent recommendations for resolving deployment problems.
-    """
+    
+    Note: SSL verification is disabled for traffic intercept scenarios.
+    """,
+    # Configure HTTP client with SSL verification disabled
+    http_client=httpx.AsyncClient(verify=False)
 )
 
 @mcp_server.tool()
@@ -155,14 +166,103 @@ def get_network_issues(resource_group: str) -> Dict[str, Any]:
         logger.error(f"Error analyzing network issues: {e}")
         return {"error": str(e)}
 
+@mcp_server.tool()
+async def analyze_azure_resources_with_ai(
+    resource_group: str,
+    include_network_analysis: bool = True
+) -> Dict[str, Any]:
+    """
+    Analyze Azure resources using AI-powered insights through Semantic Kernel.
+    
+    Args:
+        resource_group: Name of the resource group to analyze
+        include_network_analysis: Whether to include network-specific analysis
+        
+    Returns:
+        AI-powered analysis of Azure resources with recommendations
+    """
+    try:
+        config = get_config()
+        if not config.azure_subscription_id:
+            return {"error": "Azure subscription ID not configured"}
+        
+        if not config.openai_api_key:
+            return {"error": "OpenAI API key not configured for AI analysis"}
+        
+        # Get Azure resource data
+        azure_manager = AzureManager(config.azure_subscription_id)
+        resource_groups = azure_manager.list_resource_groups()
+        
+        # Prepare resource data for AI analysis
+        resource_data = {
+            "target_resource_group": resource_group,
+            "all_resource_groups": resource_groups,
+            "subscription_id": config.azure_subscription_id[:8] + "...",  # Masked for privacy
+        }
+        
+        if include_network_analysis:
+            network_analysis = azure_manager.get_network_issues(resource_group)
+            resource_data["network_analysis"] = network_analysis
+        
+        # Analyze with AI
+        ai_agent = NetworkTroubleshootingAgent(
+            config.openai_api_key, 
+            config.openai_model
+        )
+        
+        analysis = await ai_agent.analyze_azure_resources(resource_data)
+        
+        return {
+            "analysis": analysis,
+            "resource_data": resource_data,
+            "ai_powered": True
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in AI-powered resource analysis: {e}")
+        return {"error": str(e)}
+
+@mcp_server.tool()
+def list_azure_resources_in_group(resource_group: str) -> Dict[str, Any]:
+    """
+    List all Azure resources in a specific resource group using Azure Management SDK.
+    
+    Args:
+        resource_group: Name of the resource group
+        
+    Returns:
+        List of resources with their types and properties
+    """
+    try:
+        config = get_config()
+        if not config.azure_subscription_id:
+            return {"error": "Azure subscription ID not configured"}
+        
+        azure_manager = AzureManager(config.azure_subscription_id)
+        resource_list = azure_manager.list_resources_in_group(resource_group)
+        
+        return resource_list
+        
+    except Exception as e:
+        logger.error(f"Error listing resources: {e}")
+        return {"error": str(e)}
+
 def run_mcp_server():
     """
     Run the MCP server using streamable-http transport (FastMCP built-in HTTP server).
     This is the main entry point for the MCP server.
+    SSL verification is disabled for traffic intercept scenarios.
     """
     logger.info("Starting Hero of the Day MCP server (streamable-http mode)...")
-    # Use a custom HTTP client with SSL verification disabled
-    mcp_server.run(transport="streamable-http")
+    logger.info("SSL verification is disabled for traffic intercept compatibility")
+    
+    # Configure additional HTTP client settings for SSL bypass
+    try:
+        # Use the MCP server with SSL verification disabled
+        mcp_server.run(transport="streamable-http")
+    except Exception as e:
+        logger.error(f"Failed to start MCP server: {e}")
+        raise
 
 if __name__ == "__main__":
     # Configure logging

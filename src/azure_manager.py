@@ -60,6 +60,8 @@ class AzureManager:
             )
             
             return {
+                "deployment_name": deployment_name,
+                "resource_group": resource_group,
                 "deployment_state": deployment.properties.provisioning_state,
                 "error": deployment.properties.error if deployment.properties.error else None,
                 "timestamp": deployment.properties.timestamp
@@ -67,3 +69,34 @@ class AzureManager:
         except Exception as e:
             logger.error(f"Error getting deployment details: {e}")
             return {"error": str(e)}
+    
+    def list_resources_in_group(self, resource_group: str):
+        """List all resources in a specific resource group"""
+        try:
+            resources = list(self.resource_client.resources.list_by_resource_group(resource_group))
+            resource_list = []
+            
+            for resource in resources:
+                resource_info = {
+                    "name": resource.name,
+                    "type": resource.type,
+                    "location": resource.location,
+                    "id": resource.id
+                }
+                # Add additional properties if available
+                if hasattr(resource, 'kind') and resource.kind:
+                    resource_info["kind"] = resource.kind
+                if hasattr(resource, 'sku') and resource.sku:
+                    resource_info["sku"] = resource.sku.name if hasattr(resource.sku, 'name') else str(resource.sku)
+                
+                resource_list.append(resource_info)
+            
+            return {
+                "resource_group": resource_group,
+                "resource_count": len(resource_list),
+                "resources": resource_list
+            }
+            
+        except Exception as e:
+            logger.error(f"Error listing resources in group {resource_group}: {e}")
+            return {"error": str(e), "resource_group": resource_group}

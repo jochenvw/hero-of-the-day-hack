@@ -3,6 +3,18 @@
 
 Welcome to the **Hero of the Day Hack**! This project demonstrates how to use AI and cloud tools to troubleshoot enterprise networking issues in a modern, interactive way. 🌐🤖
 
+## 💼 Business Case & Azure Deployment
+
+**NEW**: Comprehensive business case and cost analysis for Azure deployment is now available in the [`docs/`](./docs/) directory.
+
+### Quick Summary
+- **ROI**: 676% annually with 1.5-month payback period
+- **Cost**: $894-$1,674/month for production deployment
+- **Savings**: $135,912/year through reduced troubleshooting time
+- **Architecture**: Secure, scalable Azure deployment with private connectivity
+
+👉 **[View Full Business Case](./docs/README.md)** for detailed cost analysis, architecture diagrams, and deployment templates.
+
 ## 📝 Scenario
 
 1. 👤 **Customer** is part of a team that uses the enterprise networking team's deployment stack.
@@ -91,6 +103,11 @@ To use this MCP server with GitHub Copilot, you'll need to configure it in your 
 │   ├── 📄 network_troubleshooting_system.md
 │   ├── 📄 azure_resource_analysis.md
 │   └── 📄 deployment_error_analysis_template.md
+├── 📁 docs/               # Business case and deployment documentation
+│   ├── 📄 README.md       # Business case summary
+│   ├── 📄 business-case-azure-deployment.md # Detailed cost analysis
+│   ├── 📄 azure-architecture.md # Architecture diagrams
+│   └── 📄 deployment-guide.md # Infrastructure as Code templates
 └── 📄 README.md           # This file
 ```
 

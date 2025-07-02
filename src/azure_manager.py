@@ -4,7 +4,7 @@ Azure Integration Module
 This module handles interactions with Azure resources for network troubleshooting.
 """
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 import logging
@@ -16,7 +16,8 @@ class AzureManager:
     
     def __init__(self, subscription_id: str = None):
         self.subscription_id = subscription_id
-        self.credential = DefaultAzureCredential()
+        # Use Azure CLI logged-in credentials
+        self.credential = AzureCliCredential()
         
         if subscription_id:
             self.resource_client = ResourceManagementClient(

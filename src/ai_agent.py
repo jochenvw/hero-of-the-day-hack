@@ -10,8 +10,10 @@ import ssl
 from typing import Dict, List, Any
 import logging
 from pathlib import Path
+import httpx
+from openai import AsyncAzureOpenAI
 from semantic_kernel import Kernel
-from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
+from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.core_plugins.text_plugin import TextPlugin
 from semantic_kernel.functions import KernelArguments
 from semantic_kernel.prompt_template import InputVariable, PromptTemplateConfig
@@ -32,23 +34,45 @@ class NetworkTroubleshootingAgent:
         self.prompts_dir = Path(__file__).parent.parent / "prompts"
         self.deployment_analyzer = None  # Initialize as None
         
-        if openai_api_key:
-            # Add OpenAI chat completion service with SSL verification disabled
-            # Note: SSL verification is handled at the HTTP client level
-            chat_completion = OpenAIChatCompletion(
-                service_id="chat-gpt",
-                ai_model_id=model,
-                api_key=openai_api_key
-            )
-            self.kernel.add_service(chat_completion)
-            
-            # Add text plugin for basic text operations
-            self.kernel.add_plugin(TextPlugin(), plugin_name="TextPlugin")
-            
-            # Load and register prompt functions
-            self._load_prompt_functions()
+        # Check for Azure OpenAI configuration
+        azure_endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+        azure_api_key = os.getenv('AZURE_OPENAI_API_KEY')
+        azure_api_version = os.getenv('AZURE_OPENAI_API_VERSION')
+        azure_deployment = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+        
+        if azure_endpoint and azure_api_key and azure_deployment:
+            try:
+                # Create HTTP client with SSL verification disabled
+                http_client = httpx.AsyncClient(verify=False)
+                
+                # Create Azure OpenAI client with SSL verification disabled
+                azure_client = AsyncAzureOpenAI(
+                    azure_endpoint=azure_endpoint,
+                    api_key=azure_api_key,
+                    api_version=azure_api_version or "2024-02-01",
+                    azure_deployment=azure_deployment,
+                    http_client=http_client
+                )
+
+                chat_completion = AzureChatCompletion(
+                    async_client=azure_client,
+                    deployment_name=azure_deployment
+                )
+                self.kernel.add_service(chat_completion)
+                
+                # Add text plugin for basic text operations
+                self.kernel.add_plugin(TextPlugin(), plugin_name="TextPlugin")
+                
+                # Load and register prompt functions
+                self._load_prompt_functions()
+                
+                logger.info("Azure OpenAI service configured successfully")
+                
+            except Exception as e:
+                logger.error(f"Error configuring Azure OpenAI service: {e}")
+                logger.warning("AI agent will use fallback responses")
         else:
-            logger.warning("No OpenAI API key provided, AI agent will use fallback responses")
+            logger.warning("Azure OpenAI configuration not found (missing AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, or AZURE_OPENAI_DEPLOYMENT_NAME), AI agent will use fallback responses")
     
     def _load_prompt_functions(self):
         """Load prompt templates from external markdown files"""

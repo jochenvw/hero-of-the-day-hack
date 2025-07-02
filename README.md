@@ -84,7 +84,9 @@ To use this MCP server with GitHub Copilot, you'll need to configure it in your 
       "args": ["/path/to/hero-of-the-day-hack/main.py", "mcp-server"],
       "env": {
         "AZURE_SUBSCRIPTION_ID": "your-subscription-id",
-        "OPENAI_API_KEY": "your-openai-key"
+        "AZURE_OPENAI_ENDPOINT": "https://your-resource.openai.azure.com/",
+        "AZURE_OPENAI_API_KEY": "your-azure-openai-key",
+        "AZURE_OPENAI_DEPLOYMENT_NAME": "your-deployment-name"
       }
     }
   }
@@ -120,6 +122,29 @@ To use this MCP server with GitHub Copilot, you'll need to configure it in your 
 - Environment settings for Azure SDK clients
 
 This allows the system to work properly in environments where SSL traffic is intercepted and re-signed.
+
+### Azure OpenAI Configuration
+
+The AI agent now uses **Azure OpenAI** instead of regular OpenAI for enhanced security and compliance. Configure the following environment variables:
+
+```bash
+# Required Azure OpenAI settings
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_KEY=your-azure-openai-api-key
+AZURE_OPENAI_DEPLOYMENT_NAME=your-gpt-4-deployment-name
+
+# Optional API version (defaults to 2024-02-01)
+AZURE_OPENAI_API_VERSION=2024-02-01
+```
+
+**Benefits of Azure OpenAI:**
+- Enterprise-grade security and compliance
+- Regional data residency
+- Private networking support
+- Integration with Azure Active Directory
+- SSL bypass compatible with httpx async client
+
+If Azure OpenAI configuration is not provided, the system will gracefully fall back to mock responses for demonstration purposes.
 
 ### Key Features
 

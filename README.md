@@ -25,31 +25,12 @@ This workflow shows how AI can help quickly diagnose and resolve cloud deploymen
 
 ### Quick Start
 
-1. **Clone and navigate to the repository:**
-   ```bash
-   git clone <repository-url>
-   cd hero-of-the-day-hack
-   ```
-
-2. **Set up Python environment:**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-3. **Configure environment variables:**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your Azure and OpenAI credentials
-   ```
-
-4. **Run the application:**
-   ```bash
-   python main.py --help
-   python main.py setup  # Set up development environment
-   python main.py        # Run the main application
-   ```
+```bash
+git clone <repository-url>
+cd hero-of-the-day-hack
+pip install -r requirements.txt
+python -m src.mcp_server
+```
 
 ## 🤖 MCP Server Integration
 

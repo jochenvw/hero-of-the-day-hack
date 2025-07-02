@@ -51,6 +51,44 @@ This workflow shows how AI can help quickly diagnose and resolve cloud deploymen
    python main.py        # Run the main application
    ```
 
+## 🤖 MCP Server Integration
+
+This project includes an MCP (Model Context Protocol) server that enables GitHub Copilot to interact with Azure troubleshooting capabilities.
+
+### Starting the MCP Server
+
+```bash
+python main.py mcp-server
+```
+
+The MCP server provides the following tools to GitHub Copilot:
+
+- **hello_world**: Test MCP connectivity with a simple greeting
+- **get_azure_resource_groups**: List Azure resource groups in your subscription
+- **analyze_deployment_error**: Analyze specific deployment errors in Azure
+- **get_ai_troubleshooting_advice**: Get AI-powered troubleshooting recommendations
+- **get_network_issues**: Analyze network resources for potential issues
+
+### GitHub Copilot Integration
+
+To use this MCP server with GitHub Copilot, you'll need to configure it in your development environment. The server uses stdio transport for communication.
+
+**Example configuration for GitHub Copilot:**
+```json
+{
+  "mcpServers": {
+    "hero-of-the-day": {
+      "command": "python",
+      "args": ["/path/to/hero-of-the-day-hack/main.py", "mcp-server"],
+      "env": {
+        "AZURE_SUBSCRIPTION_ID": "your-subscription-id",
+        "OPENAI_API_KEY": "your-openai-key"
+      }
+    }
+  }
+}
+```
+
 ### Project Structure
 
 ```
@@ -62,6 +100,7 @@ This workflow shows how AI can help quickly diagnose and resolve cloud deploymen
 │   ├── 📄 __init__.py
 │   ├── 📄 azure_manager.py  # Azure resource management
 │   ├── 📄 ai_agent.py      # AI troubleshooting agent
+│   ├── 📄 mcp_server.py    # MCP server for GitHub Copilot
 │   └── 📄 config.py        # Configuration management
 └── 📄 README.md           # This file
 ```
@@ -70,6 +109,7 @@ This workflow shows how AI can help quickly diagnose and resolve cloud deploymen
 
 - 🔧 **Azure Integration**: Manage and analyze Azure resources
 - 🤖 **AI-Powered Analysis**: Use Semantic Kernel for intelligent troubleshooting
+- 🌐 **MCP Server**: Model Context Protocol server for GitHub Copilot integration
 - ⚡ **Quick Setup**: Minimal configuration for rapid hackathon development
 - 🎯 **Modular Design**: Easy to extend and customize
 

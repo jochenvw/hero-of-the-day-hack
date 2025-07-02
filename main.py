@@ -65,5 +65,19 @@ def setup():
     
     console.print("✅ Setup complete! Activate venv with: source venv/bin/activate (Linux/Mac) or venv\\Scripts\\activate (Windows)", style="green")
 
+@app.command()
+def mcp_server():
+    """Start the MCP (Model Context Protocol) server for GitHub Copilot integration"""
+    console.print("🚀 Starting MCP server for GitHub Copilot...", style="blue")
+    
+    try:
+        from src.mcp_server import run_mcp_server
+        run_mcp_server()
+    except ImportError as e:
+        console.print(f"❌ Error importing MCP server: {e}", style="red")
+        console.print("💡 Make sure you have installed the dependencies with: python main.py setup", style="yellow")
+    except Exception as e:
+        console.print(f"❌ Error running MCP server: {e}", style="red")
+
 if __name__ == "__main__":
     app()
